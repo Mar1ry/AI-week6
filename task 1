@@ -1,0 +1,194 @@
+import React, { useState, useEffect } from 'react';
+
+// Main App component
+const App = () => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [classificationResult, setClassificationResult] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isAuthReady, setIsAuthReady] = useState(false); // State to track Firebase auth readiness
+
+    // Simulate recyclable categories for demonstration
+    const recyclableCategories = ['Plastic Bottle', 'Paper', 'Metal Can', 'Glass', 'Cardboard'];
+
+    // Function to handle image selection
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+            setPreviewUrl(URL.createObjectURL(file));
+            setClassificationResult(''); // Clear previous result
+        } else {
+            setSelectedImage(null);
+            setPreviewUrl(null);
+            setClassificationResult('');
+        }
+    };
+
+    // Simulate classification
+    const classifyImage = () => {
+        if (!selectedImage) {
+            setClassificationResult('Please select an image first.');
+            return;
+        }
+
+        setIsLoading(true);
+        setClassificationResult('Classifying...');
+
+        // Simulate network delay and processing on an edge device
+        setTimeout(() => {
+            const randomCategory = recyclableCategories[Math.floor(Math.random() * recyclableCategories.length)];
+            setClassificationResult(`Detected: ${randomCategory}`);
+            setIsLoading(false);
+        }, 2000); // Simulate 2-second inference time
+    };
+
+    // Firebase initialization and authentication (conceptual, as actual Firebase is not used for this simulation)
+    useEffect(() => {
+        // In a real application, you would initialize Firebase here
+        // and handle authentication with signInWithCustomToken or signInAnonymously.
+        // For this simulation, we just set isAuthReady to true.
+        setIsAuthReady(true);
+        console.log("Firebase (simulated) initialized and authenticated.");
+    }, []);
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-4 font-inter text-gray-800 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-2xl w-full">
+                <h1 className="text-4xl font-extrabold text-center text-green-700 mb-6">
+                    Recyclable Item Classifier
+                </h1>
+                <p className="text-center text-gray-600 mb-8">
+                    Upload an image to see a simulated classification of recyclable items.
+                    This demonstrates how Edge AI can process visual data in real-time.
+                </p>
+
+                {/* Image Upload Section */}
+                <div className="mb-8 p-6 border-2 border-dashed border-green-300 rounded-xl bg-green-50 text-center">
+                    <label htmlFor="image-upload" className="cursor-pointer block text-lg font-semibold text-green-600 mb-4">
+                        Upload Image
+                    </label>
+                    <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+                    <button
+                        onClick={() => document.getElementById('image-upload').click()}
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
+                    >
+                        Choose File
+                    </button>
+                    {previewUrl && (
+                        <div className="mt-6">
+                            <h3 className="text-xl font-semibold text-gray-700 mb-3">Image Preview:</h3>
+                            <img
+                                src={previewUrl}
+                                alt="Preview"
+                                className="max-w-full h-auto rounded-lg shadow-md mx-auto border border-gray-200"
+                                style={{ maxHeight: '300px' }}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Classification Button and Result */}
+                <div className="text-center mb-8">
+                    <button
+                        onClick={classifyImage}
+                        disabled={!selectedImage || isLoading}
+                        className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75
+                            ${(!selectedImage || isLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                        {isLoading ? 'Classifying...' : 'Classify Image'}
+                    </button>
+                    {classificationResult && (
+                        <p className="mt-6 text-2xl font-bold text-blue-700">
+                            {classificationResult}
+                        </p>
+                    )}
+                </div>
+
+                {/* Edge AI Benefits Section */}
+                <div className="bg-gray-50 p-6 rounded-xl shadow-inner mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        🚀 Benefits of Edge AI
+                    </h2>
+                    <ul className="list-disc list-inside text-gray-700 space-y-2">
+                        <li><span className="font-semibold">Low Latency:</span> No internet required for inference, enabling real-time processing.</li>
+                        <li><span className="font-semibold">Power-Efficient:</span> Runs on low-spec hardware like Raspberry Pi, consuming less power.</li>
+                        <li><span className="font-semibold">Privacy-Preserving:</span> Data processed locally, reducing the need for cloud uploads.</li>
+                        <li><span className="font-semibold">Scalable:</span> Ideal for smart cities, industrial automation, and remote locations.</li>
+                        <li><span className="font-semibold">Offline Processing:</span> Operates reliably in environments with limited or no connectivity.</li>
+                    </ul>
+                </div>
+
+                {/* Conceptual Model Training & Deployment Steps */}
+                <div className="bg-gray-50 p-6 rounded-xl shadow-inner">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        🛠 Conceptual Workflow for Model Training & Deployment
+                    </h2>
+                    <ol className="list-decimal list-inside text-gray-700 space-y-2">
+                        <li>
+                            <span className="font-semibold">Dataset Preparation:</span> Collect and preprocess images of recyclable items (e.g., plastic, paper, metal, glass). Organize them into labeled folders.
+                        </li>
+                        <li>
+                            <span className="font-semibold">Model Training (Google Colab/Python):</span>
+                            <pre className="bg-gray-100 p-3 rounded-md text-sm mt-2 overflow-x-auto">
+                                <code className="language-python">
+{`import tensorflow as tf
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# ... (data loading and preprocessing) ...
+
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(128, 128, 3))
+base_model.trainable = False
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+predictions = Dense(num_classes, activation='softmax')(x)
+model = Model(inputs=base_model.input, outputs=predictions)
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_generator, epochs=10, validation_data=validation_generator)
+model.save('recyclable_classifier.h5')`}
+                                </code>
+                            </pre>
+                        </li>
+                        <li>
+                            <span className="font-semibold">Model Conversion to TensorFlow Lite:</span>
+                            <pre className="bg-gray-100 p-3 rounded-md text-sm mt-2 overflow-x-auto">
+                                <code className="language-python">
+{`import tensorflow as tf
+
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT] # Apply default optimizations (e.g., 8-bit quantization)
+tflite_quant_model = converter.convert()
+
+with open('recyclable_classifier_quant.tflite', 'wb') as f:
+    f.write(tflite_quant_model)
+print("Quantized TFLite model saved.")`}
+                                </code>
+                            </pre>
+                        </li>
+                        <li>
+                            <span className="font-semibold">Edge Deployment (Raspberry Pi):</span>
+                            <ul className="list-disc list-inside ml-4 mt-2">
+                                <li>Install TensorFlow Lite runtime on your Raspberry Pi.</li>
+                                <li>Transfer the `.tflite` model to the Pi.</li>
+                                <li>Write a Python script to load the model, capture images from a camera (e.g., using OpenCV), preprocess them, and perform inference.</li>
+                                <li>Measure inference latency and accuracy on the device.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default App;
+
